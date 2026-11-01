@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "installations": {
+    "react-bits:glare-hover": {
+      "id": "react-bits:glare-hover",
+      "variant": "TS-CSS",
+      "revision": "d86fccbd477786f94ca7eb891fbe0ec039d3cd3b",
+      "sourceFingerprint": "22ed3e6a69c19a91bf31ad387b7a1840e9460bba9629e1a2b9ba1742ebbeabea",
+      "files": [
+        {
+          "path": "src/components/react-bits/GlareHover/GlareHover.css",
+          "sha256": "df3c0291d3946cb0f902b25d81ace5f5a9d98f8eb2e9139f1d383d3bb6d11f5f"
+        },
+        {
+          "path": "src/components/react-bits/GlareHover/GlareHover.tsx",
+          "sha256": "e72ef4b3f0397529a28c829be9ec203f56402393294f8ecd7e4629b9c70b09e5"
+        },
+        {
+          "path": ".premium-frontend/licences/react-bits-d86fccbd477786f94ca7eb891fbe0ec039d3cd3b.md",
+          "sha256": "f4c33af6739191537738662d223b68d77bc226f4b57ea883e16481d8cc5c73c9"
+        }
+      ],
+      "licence": "https://github.com/DavidHDev/react-bits/blob/d86fccbd477786f94ca7eb891fbe0ec039d3cd3b/LICENSE.md"
+    }
+  }
+}

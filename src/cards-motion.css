@@ -1,0 +1,215 @@
+.illustrated-card {
+  position: relative;
+  isolation: isolate;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 14px 14px 5px 5px;
+  background: #132018;
+}
+.illustrated-surface {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border: 1px solid #9d86544d;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+}
+.illustrated-surface img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: right center;
+}
+.illustrated-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, #101b14f5 0%, #101b14dd 35%, #101b1420 100%),
+    linear-gradient(0deg, #101b14 0%, transparent 65%);
+}
+.illustrated-content {
+  position: relative;
+  height: 100%;
+}
+.app-shell .projects-view .project-grid.cover-project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  background: none;
+  border: none;
+  box-shadow: none;
+}
+.app-shell .projects-view .project-card.cover-project-link {
+  display: block;
+  padding: 0;
+  border: none;
+  border-radius: 14px 14px 5px 5px;
+  min-width: 0;
+  min-height: 290px;
+  background: none;
+  color: #f7eedc;
+  overflow: visible;
+  box-shadow: 0 12px 30px #0003;
+  transform: none;
+}
+.app-shell .projects-view .cover-project-link .illustrated-content {
+  padding: 28px 26px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.app-shell .projects-view .cover-project-link .card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.app-shell .projects-view .cover-project-link .project-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  border: 1px solid #b7a06a75;
+  background: #17271bd9;
+  color: #ebc887;
+  border-radius: 4px;
+}
+.app-shell .projects-view .cover-project-link .card-top > svg {
+  position: static;
+  display: block;
+  color: #ebc887;
+  transform: none;
+}
+.app-shell .projects-view .cover-project-link h3 {
+  font-size: 24px;
+  line-height: 1.2;
+  align-self: flex-start;
+  text-align: left;
+  margin: 0;
+  max-width: 90%;
+  overflow-wrap: anywhere;
+  color: #fff4de;
+}
+.app-shell .projects-view .cover-project-link p {
+  margin: 0;
+  max-width: 85%;
+  font-size: 13px;
+  line-height: 1.75;
+  color: #e3dfd2;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.app-shell .projects-view .cover-project-link .project-card-footer {
+  position: static;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: auto 0 0;
+  padding-top: 14px;
+  border-top: 1px solid #d0b88040;
+  color: #ded6c3;
+  font-size: 11px;
+}
+.app-shell .projects-view .cover-project-link .creator {
+  min-width: 0;
+  gap: 8px;
+}
+.app-shell .projects-view .cover-project-link .avatar {
+  display: inline-flex;
+}
+.app-shell .projects-view .cover-project-link:focus-visible {
+  outline: 3px solid #f0cf8c;
+  outline-offset: 5px;
+}
+.app-shell .attendance-view .attendance-illustration {
+  margin-bottom: 24px;
+  border: 1px solid #bba37166;
+}
+.app-shell .attendance-view .attendance-illustration .illustrated-surface img {
+  object-position: right 58%;
+}
+.app-shell
+  .attendance-view
+  .attendance-illustration
+  .illustrated-surface::after {
+  background: linear-gradient(
+    90deg,
+    #102017f2 0%,
+    #102017e8 55%,
+    #10201760 100%
+  );
+}
+.app-shell .attendance-view .attendance-illustration .attendance-summary {
+  background: none;
+  border: none;
+  margin: 0;
+  box-shadow: none;
+  min-height: 156px;
+}
+.app-shell .attendance-view .attendance-illustration .attendance-summary > div {
+  background: none;
+}
+@media (max-width: 800px) {
+  .app-shell .projects-view .project-grid.cover-project-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .app-shell .projects-view .project-card.cover-project-link {
+    min-height: 260px;
+  }
+  .app-shell .projects-view .cover-project-link .illustrated-content {
+    padding: 24px;
+  }
+  .app-shell .projects-view .cover-project-link p {
+    max-width: 75%;
+  }
+}
+@media (max-width: 480px) {
+  .app-shell .projects-view .cover-project-link .illustrated-content {
+    padding: 23px 20px;
+  }
+  .app-shell .projects-view .cover-project-link h3 {
+    font-size: 23px;
+  }
+  .app-shell .projects-view .cover-project-link p {
+    max-width: 100%;
+  }
+  .app-shell .attendance-view .attendance-illustration .attendance-summary {
+    min-height: 0;
+  }
+}
+
+/* Static cover planes: no parallax, scale, glare or pointer-driven movement. */
+.app-shell .projects-view .project-card.cover-project-link:hover {
+  transform: none;
+  box-shadow:
+    0 12px 30px #0003,
+    0 0 0 1px #b7a06a80;
+}
+.app-shell .projects-view .project-card.cover-project-link::before,
+.app-shell .projects-view .project-card.cover-project-link::after {
+  display: none;
+}
+.app-shell .project-cover {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.app-shell .project-cover-art {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: 48%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
+  opacity: 0.26;
+  mask-image: linear-gradient(90deg, transparent, black);
+  z-index: -1;
+  pointer-events: none;
+}

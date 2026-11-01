@@ -1,0 +1,118 @@
+.profile-avatar {
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.profile-avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: white;
+}
+.profile-editor {
+  display: grid;
+  gap: 18px;
+}
+.profile-editor .file-upload-surface {
+  min-height: 0;
+  padding: 16px;
+}
+.profile-editor .file-upload-stage {
+  width: 48px;
+  height: 48px;
+  margin-top: 14px;
+  margin-bottom: 8px;
+}
+.profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 0 18px;
+  border-bottom: 1px solid var(--line);
+}
+.profile-editor .profile-avatar-large {
+  width: 72px;
+  height: 72px;
+  font-size: 22px;
+  border-radius: 50%;
+}
+.profile-identity h3 {
+  margin: 0 0 4px;
+  font-size: 19px;
+}
+.profile-identity p {
+  margin: 0 0 5px;
+  overflow-wrap: anywhere;
+}
+.profile-identity small,
+.profile-hint {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.profile-hint {
+  margin: 0;
+}
+.profile-preview {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  background: #101713;
+}
+.profile-preview > img {
+  width: 112px;
+  height: 112px;
+  flex-shrink: 0;
+  object-fit: cover;
+  image-orientation: from-image;
+  background: white;
+  border: 1px solid #bb9b65;
+}
+.profile-preview figcaption {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  line-height: 1.5;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.profile-preview figcaption strong {
+  font-size: 15px;
+  color: #ead9b5;
+}
+.profile-preview figcaption span:last-child {
+  color: var(--muted);
+}
+.profile-status {
+  margin: 0;
+  min-height: 20px;
+  color: #abd5b5;
+  font-size: 13px;
+}
+.profile-status:empty {
+  display: none;
+}
+.profile-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+}
+@media (max-width: 480px) {
+  .profile-preview {
+    gap: 12px;
+    padding: 12px;
+  }
+  .profile-preview > img {
+    width: 84px;
+    height: 84px;
+  }
+  .profile-actions .button {
+    flex-grow: 1;
+  }
+}

@@ -1,0 +1,228 @@
+/* Authenticated workspace material and corner system. The studio login is isolated. */
+.app-shell .hub-views {
+  margin-bottom: 16px;
+}
+.app-shell .hub-views + .panel.overview {
+  margin-top: 0;
+}
+.app-shell .export-panel .fluid-trigger {
+  margin: 0;
+}
+.app-shell .export-panel {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) max-content;
+  align-items: start;
+  gap: 16px 19px;
+}
+.app-shell .export-panel .fluid-action-top {
+  grid-column: 3;
+  grid-row: 1;
+  width: max-content;
+}
+.app-shell .export-panel .fluid-action-detail {
+  grid-column: 2 / -1;
+  justify-self: end;
+}
+@media (max-width: 760px) {
+  .app-shell .export-panel {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .app-shell .export-icon {
+    display: none;
+  }
+  .app-shell .export-panel .fluid-action-top,
+  .app-shell .export-panel .fluid-action-detail {
+    grid-column: 1;
+    grid-row: auto;
+    justify-self: start;
+  }
+}
+.app-shell,
+.dialog-content,
+.dropdown {
+  --radius-panel: 18px;
+  --radius-dialog: 22px;
+  --radius-control: 9px;
+  --radius-button: 14px;
+  --material-image: url("/assets/portal-material-v6.webp");
+}
+
+.app-shell .portal-atmosphere {
+  background-color: #161c18;
+  background-image:
+    radial-gradient(ellipse at 52% 12%, #b1914b1f, transparent 68%),
+    linear-gradient(90deg, #11181380, #10181418 35%, #11181340),
+    var(--material-image);
+  background-size:
+    auto,
+    auto,
+    768px 512px;
+  background-position:
+    center,
+    center,
+    center top;
+}
+
+.app-shell .portal-atmosphere::before,
+.app-shell .portal-atmosphere::after {
+  mask-image:
+    linear-gradient(0deg, transparent, #000 12%, #000 88%, transparent),
+    linear-gradient(90deg, #000 15%, #000c 50%, transparent 98%);
+  mask-composite: intersect;
+}
+.app-shell .portal-atmosphere::after {
+  mask-image:
+    linear-gradient(0deg, transparent, #000 12%, #000 88%, transparent),
+    linear-gradient(270deg, #000 15%, #000c 50%, transparent 98%);
+}
+
+.app-shell :is(.library-tools, .project-cover, .attendance-heading) {
+  border-radius: var(--radius-panel);
+  background-color: #18231c;
+  background-image:
+    linear-gradient(115deg, #273a29b8, #142319e8 72%), var(--material-image);
+  background-size:
+    auto,
+    768px 512px;
+  border-top: 1px solid #c3ac787a;
+  box-shadow:
+    0 18px 40px #050c0852,
+    inset 0 1px #dfca961a;
+}
+.app-shell .attendance-heading {
+  margin-bottom: 18px;
+  border-bottom: 1px solid #b5a37a4f;
+}
+
+.app-shell :is(.export-panel, .date-filters, .file-explorer, .project-links) {
+  border-radius: var(--radius-panel);
+  background-color: #1b251d;
+  background-image:
+    linear-gradient(120deg, #263528dc, #152219ed), var(--material-image);
+  background-size:
+    auto,
+    768px 512px;
+  box-shadow:
+    0 12px 28px #050b0733,
+    inset 0 1px #e1ce9414;
+}
+.app-shell .project-links {
+  padding: 20px 24px;
+  border: 1px solid #77765a55;
+}
+.app-shell .portal-page > .section-heading,
+.app-shell .portal-page > .back-link,
+.app-shell .resource-section > .section-heading,
+.app-shell .main-content > .page-heading,
+.app-shell .main-content > .sub-breadcrumb,
+.app-shell :is(.viewer-toolbar, .document-reader, .directory-status, .empty) {
+  border-radius: var(--radius-panel);
+}
+.app-shell .attendance-view > .section-heading {
+  margin-bottom: 14px;
+  background-image:
+    linear-gradient(115deg, #243326db, #16231aee), var(--material-image);
+  background-size:
+    auto,
+    768px 512px;
+}
+.app-shell :is(.read-only-tag, .project-count) {
+  border-radius: 6px;
+}
+.app-shell .panel.overview {
+  border-radius: var(--radius-panel);
+  background-image: linear-gradient(125deg, #fff9e233, transparent 60%);
+}
+.app-shell .projects-view .project-card.cover-project-link,
+.app-shell .illustrated-card,
+.app-shell :is(.resource-table, .member-table, .event-list, .viewer-frame) {
+  border-radius: var(--radius-panel);
+}
+.app-shell .file-explorer {
+  border-top-width: 1px;
+}
+.app-shell .explorer-drop {
+  margin: 12px;
+  padding: 13px 12px;
+  border: 1px dashed #81826780;
+  border-radius: var(--radius-control);
+  background: #111c1459;
+}
+.app-shell .explorer-row:last-child {
+  border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+}
+.app-shell .member-table-head {
+  background: linear-gradient(110deg, #3a4430, #293829);
+}
+.app-shell .event-list > .event-row:first-child {
+  border-radius: var(--radius-panel) var(--radius-panel) 0 0;
+}
+.app-shell .event-list > .event-row:last-child {
+  border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+}
+.app-shell .project-tabs a {
+  border-radius: var(--radius-control) var(--radius-control) 0 0;
+}
+.app-shell :is(.primary-navigation a, .user-trigger, .search-input),
+.app-shell :is(input, select, textarea),
+.dialog-content :is(input, select, textarea),
+.app-shell .project-links li,
+.app-shell .projects-view .cover-project-link .project-icon,
+.app-shell :is(.icon-button, .history-button, .text-button),
+.dialog-content :is(.icon-button, .text-button) {
+  border-radius: var(--radius-control);
+}
+.app-shell .button,
+.dialog-content .button {
+  border-radius: var(--radius-button);
+}
+.app-shell .search-input input {
+  border-radius: 0;
+}
+.app-shell .avatar,
+.dialog-content .profile-avatar {
+  border-radius: 50%;
+}
+
+/* Radix portals are siblings of the shell, so their surfaces are scoped explicitly. */
+.dialog-content {
+  border-radius: var(--radius-dialog);
+  background-color: #1b251c;
+  background-image:
+    linear-gradient(135deg, #2a3929e8, #172319f5 65%), var(--material-image);
+  background-size:
+    auto,
+    768px 512px;
+  box-shadow:
+    0 32px 100px #0009,
+    inset 0 1px #d7bb7c40;
+}
+.dropdown {
+  border-radius: 12px;
+}
+.dropdown [role="menuitem"] {
+  border-radius: 7px;
+}
+.dialog-content
+  :is(
+    .file-upload-surface,
+    .profile-preview,
+    .file-editor-preview,
+    .conflict-panel
+  ),
+.dialog-content .upload-results li {
+  border-radius: var(--radius-control);
+}
+.dialog-content .profile-preview > img {
+  border-radius: 50%;
+}
+@media (max-width: 640px) {
+  .app-shell,
+  .dialog-content {
+    --radius-panel: 16px;
+    --radius-dialog: 20px;
+  }
+  .app-shell .project-links {
+    padding: 18px 16px;
+  }
+}

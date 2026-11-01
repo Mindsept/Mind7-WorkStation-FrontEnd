@@ -1,0 +1,25 @@
+# Example only. Supply your real TLS termination and backend service address.
+server {
+    listen 80;
+    server_name workstation.example.com;
+    root /srv/workstation/frontend/dist;
+    index index.html;
+
+    location /api/ {
+        # Preserve the full /api path and backend response CSP/Set-Cookie headers.
+        proxy_pass http://backend:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        client_max_body_size 21m;
+        proxy_read_timeout 120s;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html;
+        add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self'; frame-src blob:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'self'" always;
+        add_header X-Content-Type-Options nosniff always;
+        add_header Referrer-Policy no-referrer always;
+        add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+    }
+}
