@@ -19,6 +19,13 @@ try {
     });
     const page = await context.newPage();
     page.on("pageerror", (e) => errors.push(e.message));
+    page.on("console", (message) => {
+      if (
+        message.type() === "error" &&
+        message.text().includes("Cannot update a component")
+      )
+        errors.push(message.text());
+    });
     await page.goto(`${api}/auth/login?dev_user=${alias}`);
     const sessionResponse = await context.request.get(`${api}/auth/session`);
     expect(sessionResponse.status()).toBe(200);

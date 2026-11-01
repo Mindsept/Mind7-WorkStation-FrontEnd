@@ -12,6 +12,13 @@ const context = await browser.newContext({
 const page = await context.newPage();
 const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
+page.on("console", (message) => {
+  if (
+    message.type() === "error" &&
+    message.text().includes("Cannot update a component")
+  )
+    errors.push(message.text());
+});
 const created = { project: null, event: null };
 let csrf;
 const api = "/api/v1";

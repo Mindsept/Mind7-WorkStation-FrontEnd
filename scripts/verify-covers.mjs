@@ -30,6 +30,13 @@ const ids = [],
   errors = [];
 let csrf;
 page.on("pageerror", (e) => errors.push(e.message));
+page.on("console", (message) => {
+  if (
+    message.type() === "error" &&
+    message.text().includes("Cannot update a component")
+  )
+    errors.push(message.text());
+});
 const request = async (path, method = "GET", data) => {
   const r = await context.request.fetch("/api/v1" + path, {
     method,

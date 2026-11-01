@@ -15,6 +15,13 @@ const errors = [],
   artifacts = "artifacts/final-acceptance/explorer";
 mkdirSync(artifacts, { recursive: true });
 page.on("pageerror", (e) => errors.push(e.message));
+page.on("console", (message) => {
+  if (
+    message.type() === "error" &&
+    message.text().includes("Cannot update a component")
+  )
+    errors.push(message.text());
+});
 const runTitle = `Final explorer ${Date.now()}`;
 let pid, csrf;
 async function request(path, method = "GET", data) {

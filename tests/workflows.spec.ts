@@ -4,6 +4,14 @@ const projectId = "00000000-0000-4000-8000-000000000010";
 test("project CRUD, shared documentation, upload, rename, download and deletion", async ({
   page,
 }) => {
+  const renderWarnings: string[] = [];
+  page.on("console", (message) => {
+    if (
+      message.type() === "error" &&
+      message.text().includes("Cannot update a component")
+    )
+      renderWarnings.push(message.text());
+  });
   await page.goto("/projects");
   await page.getByRole("button", { name: "New project", exact: true }).click();
   await page.getByLabel("Project title").fill("Integration notebook");
@@ -90,6 +98,7 @@ test("project CRUD, shared documentation, upload, rename, download and deletion"
     page.getByRole("heading", { name: "Your projects" }),
   ).toBeVisible();
   await expect(page.getByText("Updated notebook")).toHaveCount(0);
+  expect(renderWarnings).toEqual([]);
 });
 test("attendance filters, zero-event member, CRUD, duplicate validation and member permissions", async ({
   page,

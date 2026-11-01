@@ -1,11 +1,4 @@
-import React, {
-  Suspense,
-  lazy,
-  useEffect,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from "react";
+import React, { Suspense, lazy, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom/client";
 import {
   BrowserRouter,
@@ -32,7 +25,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { api, ApiError, clearSession, mockMode } from "./api/client";
-import type { Project, Session } from "./api/types";
+import type { Session } from "./api/types";
 import { ErrorNotice, Loading, initials } from "./components/ui";
 import { Avatar } from "./features/profile/avatar";
 import { ProfileDialog } from "./features/profile/profile-dialog";
@@ -124,7 +117,6 @@ function DemoControl({ onReset }: { onReset: () => void }) {
     </div>
   );
 }
-const clientCache = queryClient.getQueryCache();
 function Shell({
   session,
   onLogout,
@@ -138,13 +130,14 @@ function Shell({
   const accountTrigger = useRef<HTMLButtonElement>(null);
   const location = useLocation();
   const projectId = location.pathname.match(/^\/projects\/([^/]+)/)?.[1];
-  const projectTitle = useSyncExternalStore(
-    (notify) => clientCache.subscribe(notify),
-    () =>
-      projectId
-        ? queryClient.getQueryData<Project>(["project", projectId])?.title
-        : undefined,
-  );
+  // Use React Query's scheduled observer notifications, not synchronous global
+  // cache events emitted while descendant queries are constructed in render.
+  const { data: projectTitle } = useQuery({
+    queryKey: ["project", projectId],
+    queryFn: () => api.project(projectId!),
+    enabled: Boolean(projectId),
+    select: (project) => project.title,
+  });
 
   useEffect(() => {
     const preventFileNavigation = (event: DragEvent) => {
