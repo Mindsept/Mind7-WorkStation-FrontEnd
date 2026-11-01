@@ -1,4 +1,4 @@
-import { checkFluidButton, captureFluid } from "./fluid-button-checks";
+import { checkFluidButton, assertNoOverflow } from "./fluid-button-checks";
 import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
@@ -202,7 +202,7 @@ for (const width of [1440, 390]) {
     fixture.block();
     const save = page.getByRole("button", { name: "Save photo", exact: true });
     await checkFluidButton(save, false);
-    await captureFluid(page, `profile-${width}-idle`);
+    await assertNoOverflow(page);
     await save.focus();
     const size = await save.boundingBox();
     await page.keyboard.press("Enter");
@@ -211,7 +211,7 @@ for (const width of [1440, 390]) {
     await expect(save).toBeFocused();
     await expect(save.locator(".action-loader")).toBeVisible();
     await checkFluidButton(save, true, size);
-    await captureFluid(page, `profile-${width}-pending`);
+    await assertNoOverflow(page);
     const busySize = await save.boundingBox();
     expect(busySize?.width).toBe(size?.width);
     expect(busySize?.height).toBe(size?.height);
@@ -220,14 +220,14 @@ for (const width of [1440, 390]) {
     await expect(
       page.getByLabel("Current profile photo").locator("img"),
     ).toBeVisible();
-    await page.screenshot({ path: "artifacts/profile/profile-busy.png" });
+
     fixture.release();
     await expect(page.getByRole("alert")).toContainText(
       "Photo processing is busy",
     );
     await expect(save).toBeEnabled();
     await checkFluidButton(save, false);
-    await captureFluid(page, `profile-${width}-error`);
+    await assertNoOverflow(page);
     await expect(page.getByAltText("Selected photo preview")).toBeVisible();
     await expect(
       page.getByLabel("Current profile photo").locator("img"),
@@ -235,7 +235,7 @@ for (const width of [1440, 390]) {
     await save.click();
     await expect(page.getByRole("status")).toContainText("Profile photo saved");
     await checkFluidButton(save, false);
-    await captureFluid(page, `profile-${width}-success`);
+    await assertNoOverflow(page);
     expect(fixture.writes).toHaveLength(2);
     for (const request of fixture.writes) {
       expect(request.method).toBe("PUT");

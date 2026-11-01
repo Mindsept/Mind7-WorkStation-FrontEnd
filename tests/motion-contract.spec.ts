@@ -1,7 +1,6 @@
-import { checkFluidButton, captureFluid } from "./fluid-button-checks";
+import { checkFluidButton, assertNoOverflow } from "./fluid-button-checks";
 import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
-import fs from "node:fs/promises";
 
 test.use({ viewport: { width: 1440, height: 900 }, video: "on" });
 const pid = "10000000-0000-4000-8000-000000000001";
@@ -211,10 +210,7 @@ for (const width of [1440, 768, 390]) {
     const tabs = await page.locator(".hub-views").boundingBox();
     const files = await page.locator(".file-explorer").boundingBox();
     expect(files!.y - tabs!.y - tabs!.height).toBe(16);
-    await fs.mkdir("artifacts/final-acceptance", { recursive: true });
-    await page.screenshot({
-      path: `artifacts/final-acceptance/export-${width}-idle.png`,
-    });
+
     f.block();
     await button.click();
     await expect(button).toHaveAttribute("aria-busy", "true");
@@ -262,7 +258,7 @@ for (const width of [1440, 768, 390]) {
         page.getByRole("button", { name: "Files", exact: true }),
       ).toBeInViewport();
     };
-    await fs.mkdir("artifacts/interactions-v5", { recursive: true });
+
     await expect(page.locator(".fluid-action-detail")).toHaveCSS(
       "opacity",
       "1",
@@ -275,9 +271,7 @@ for (const width of [1440, 768, 390]) {
           .analyze()
       ).violations,
     ).toEqual([]);
-    await page.screenshot({
-      path: `artifacts/final-acceptance/export-${width}-pending.png`,
-    });
+
     f.release();
     await expect(page.getByRole("alert")).toContainText(
       "Archive service unavailable",
@@ -285,9 +279,7 @@ for (const width of [1440, 768, 390]) {
     await assertNoStatusOverlap();
     await checkFluidButton(button, false, before);
     await expect(button.locator(".action-pending")).toHaveCount(0);
-    await page.screenshot({
-      path: `artifacts/final-acceptance/export-${width}-error.png`,
-    });
+
     const downloaded = page.waitForEvent("download");
     await button.click();
     await downloaded;
@@ -318,9 +310,6 @@ for (const width of [1440, 768, 390]) {
           window.scrollY + el.getBoundingClientRect().top - 200,
         ),
       );
-    await page.screenshot({
-      path: `artifacts/final-acceptance/overview-gap-${width}.png`,
-    });
   });
 }
 
@@ -352,23 +341,21 @@ for (const width of [1440, 390]) {
     });
     await checkFluidButton(submit, false);
     const target = await submit.boundingBox();
-    await captureFluid(page, `upload-${width}-idle`);
+    await assertNoOverflow(page);
     await submit.click();
     await expect(submit).toHaveAttribute("aria-busy", "true");
     await checkFluidButton(submit, true, target);
     await expect(submit).toBeFocused();
-    await captureFluid(page, `upload-${width}-pending`);
+    await assertNoOverflow(page);
     await expect.poll(f.waiting).toBeTruthy();
     await submit.press("Enter");
     expect(f.writes).toEqual(["first.md"]);
-    await page.screenshot({
-      path: "artifacts/interactions-v5/upload-pending.png",
-    });
+
     f.release();
     await expect(dialog.getByText("Temporary upload failure")).toBeVisible();
     await expect(dialog.locator('[data-upload-state="done"]')).toHaveCount(1);
     await checkFluidButton(submit, false);
-    await captureFluid(page, `upload-${width}-error`);
+    await assertNoOverflow(page);
     await dialog
       .getByRole("button", { name: "Retry retry.md", exact: true })
       .click();
@@ -379,7 +366,7 @@ for (const width of [1440, 390]) {
     await expect(dialog.locator('[data-upload-state="done"]')).toHaveCount(3);
     expect(f.writes).toEqual(["first.md", "retry.md", "retry.md", "last.md"]);
     await checkFluidButton(submit, false);
-    await captureFluid(page, `upload-${width}-success`);
+    await assertNoOverflow(page);
     await dialog.getByRole("button", { name: "Done", exact: true }).click();
     await expect(page.getByText("last.md", { exact: true })).toBeVisible();
   });
@@ -406,9 +393,7 @@ test("static cards and badge motion remain inside fixed targets; keyboard and re
     )
     .toBe("none");
   expect(await link.boundingBox()).toEqual(stable);
-  await page.screenshot({
-    path: "artifacts/interactions-v5/projects-wobble.png",
-  });
+
   await link.press("Enter");
   const folder = page.locator(".explorer-row").filter({ hasText: "Research" });
   await folder.hover();
@@ -422,7 +407,7 @@ test("static cards and badge motion remain inside fixed targets; keyboard and re
       .filter({ hasText: "Empty folder" })
       .locator(".images-badge-paper"),
   ).toHaveCount(0);
-  await page.screenshot({ path: "artifacts/interactions-v5/folder-fan.png" });
+
   const bounds = await folder.boundingBox();
   for (const paper of await folder.locator(".images-badge-paper").all()) {
     const box = await paper.boundingBox();
@@ -500,12 +485,12 @@ for (const width of [1440, 390]) {
     });
     await checkFluidButton(submit, false);
     const target = await submit.boundingBox();
-    await captureFluid(page, `create-${width}-idle`);
+    await assertNoOverflow(page);
     await submit.click();
     await expect(submit).toHaveAttribute("aria-busy", "true");
     await checkFluidButton(submit, true, target);
     await expect(submit).toBeFocused();
-    await captureFluid(page, `create-${width}-pending`);
+    await assertNoOverflow(page);
     await submit.press("Enter");
     await submit.click({ force: true });
     expect(count).toBe(1);
@@ -517,10 +502,10 @@ for (const width of [1440, 390]) {
       "Retained project draft",
     );
     await checkFluidButton(submit, false);
-    await captureFluid(page, `create-${width}-error`);
+    await assertNoOverflow(page);
     await submit.click();
     await expect(page.getByRole("dialog")).toHaveCount(0);
-    await captureFluid(page, `create-${width}-success`);
+    await assertNoOverflow(page);
     expect(count).toBe(2);
   });
 }
@@ -611,13 +596,13 @@ for (const width of [1440, 390]) {
       exact: true,
     });
     await checkFluidButton(save, false);
-    await captureFluid(page, `save-${width}-idle`);
+    await assertNoOverflow(page);
     const target = await save.boundingBox();
     await save.click();
     await expect(save).toHaveAttribute("aria-busy", "true");
     await checkFluidButton(save, true, target);
     await expect(save).toBeFocused();
-    await captureFluid(page, `save-${width}-pending`);
+    await assertNoOverflow(page);
     await save.press("Enter");
     await save.click({ force: true });
     expect(count).toBe(1);
@@ -629,10 +614,10 @@ for (const width of [1440, 390]) {
       "Saved atelier",
     );
     await checkFluidButton(save, false);
-    await captureFluid(page, `save-${width}-error`);
+    await assertNoOverflow(page);
     await save.click();
     await expect(page.getByRole("dialog")).toHaveCount(0);
     expect(count).toBe(2);
-    await captureFluid(page, `save-${width}-success`);
+    await assertNoOverflow(page);
   });
 }

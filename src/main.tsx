@@ -24,7 +24,7 @@ import {
   LogOut,
   UserRound,
 } from "lucide-react";
-import { api, ApiError, clearSession, mockMode } from "./api/client";
+import { api, ApiError, clearSession } from "./api/client";
 import type { Session } from "./api/types";
 import { ErrorNotice, Loading, initials } from "./components/ui";
 import { Avatar } from "./features/profile/avatar";
@@ -81,40 +81,6 @@ function Brand() {
         MindSept <small>WORKSTATION</small>
       </span>
     </Link>
-  );
-}
-function DemoControl({ onReset }: { onReset: () => void }) {
-  return (
-    <div className="demo-bar">
-      <span>
-        DEMO WORKSPACE{" "}
-        <span className="demo-note">· Sample data resets on reload</span>
-      </span>
-      <label>
-        View as{" "}
-        <select
-          defaultValue={
-            new URLSearchParams(window.location.search).get("preview") ===
-            "signed-out"
-              ? "signed-out"
-              : "member"
-          }
-          onChange={async (e) => {
-            if (!import.meta.env.DEV) return;
-            const { setMockIdentity } = await import("./mocks/adapter");
-            setMockIdentity(
-              e.target.value as Parameters<typeof setMockIdentity>[0],
-            );
-            onReset();
-          }}
-        >
-          <option value="member">Member</option>
-          <option value="signed-out">Signed out</option>
-          <option value="denied">Access denied</option>
-          <option value="expired">Session expired</option>
-        </select>
-      </label>
-    </div>
   );
 }
 function Shell({
@@ -412,7 +378,6 @@ function App() {
           : state;
   return (
     <>
-      {mockMode && <DemoControl onReset={reset} />}{" "}
       {session.isPending ? (
         <Loading label="Opening WorkStation…" />
       ) : session.data ? (

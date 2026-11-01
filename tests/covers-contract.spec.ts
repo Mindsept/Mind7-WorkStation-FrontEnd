@@ -4,7 +4,6 @@ import {
   PROJECT_COVERS,
   projectCover,
 } from "../src/api/project-covers";
-import fs from "node:fs/promises";
 const uid = "30000000-0000-4000-8000-000000000001";
 const stamp = "2026-11-01T09:00:00Z";
 const projects = COVER_KEYS.map((cover_key, i) => ({
@@ -149,11 +148,7 @@ test("catalog keys survive reorder and detail navigation; unknown keys use a sta
   }
   await page.evaluate(() => scrollTo(0, 0));
   await page.evaluate(() => document.fonts.ready);
-  await fs.mkdir("artifacts/covers-v6", { recursive: true });
-  await page.screenshot({
-    path: "artifacts/covers-v6/project-catalog-desktop.png",
-    fullPage: true,
-  });
+
   reverse();
   await page.reload();
   for (const p of projects)

@@ -250,28 +250,7 @@
   align-items: center;
   gap: 9px;
 }
-.development-signin {
-  position: relative;
-  z-index: 5;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
-  margin: 0 5% 70px;
-  padding: 12px 16px;
-  width: fit-content;
-  background: #151b17f5;
-  border: 1px solid #8c7953;
-  font-size: 11px;
-}
-.development-signin strong {
-  color: #d4c099;
-  font-weight: 500;
-}
-.development-signin a {
-  text-decoration: underline;
-  text-underline-offset: 4px;
-}
+
 .studio-login a:focus-visible,
 .studio-login button:focus-visible {
   outline: 3px solid #fff4d5;
@@ -328,9 +307,7 @@
     font-size: 38px;
     margin: 18px 0;
   }
-  .development-signin {
-    margin-top: 450px;
-  }
+
   .studio-top-note {
     font-size: 10px;
   }
@@ -446,10 +423,7 @@
   .studio-intro .studio-auth-notice {
     font-size: 12px;
   }
-  .development-signin {
-    margin: 0 24px 35px;
-    gap: 12px;
-  }
+
   .studio-login::before {
     background:
       linear-gradient(90deg, #0c100bb3, #0c100b24),

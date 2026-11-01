@@ -6,6 +6,9 @@ server {
     index index.html;
 
     location /api/ {
+        # OAuth callback query parameters must not enter inherited access logs.
+        # Use the backend structured logs, which omit query parameters.
+        access_log off;
         # Preserve the full /api path and backend response CSP/Set-Cookie headers.
         proxy_pass http://backend:8000;
         proxy_set_header Host $host;

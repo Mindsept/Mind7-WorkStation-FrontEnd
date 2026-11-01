@@ -1,5 +1,4 @@
 import { expect, type Locator, type Page } from "@playwright/test";
-import fs from "node:fs/promises";
 
 export async function checkFluidButton(
   button: Locator,
@@ -22,12 +21,7 @@ export async function checkFluidButton(
   }
 }
 
-export async function captureFluid(page: Page, name: string) {
-  await fs.mkdir("artifacts/fluid-buttons-v5", { recursive: true });
-  await page.screenshot({
-    path: `artifacts/fluid-buttons-v5/${name}.png`,
-    fullPage: true,
-  });
+export async function assertNoOverflow(page: Page) {
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,

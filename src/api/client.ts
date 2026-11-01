@@ -19,8 +19,6 @@ import type {
   Summary,
 } from "./types";
 export const API_BASE = "/api/v1";
-export const mockMode =
-  import.meta.env.DEV && import.meta.env.VITE_MOCK_API === "true";
 export const maxUploadBytes =
   (Number(import.meta.env.VITE_MAX_UPLOAD_MB) || 20) * 1024 * 1024;
 export class ApiError extends Error {
@@ -68,8 +66,6 @@ export async function request<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  if (mockMode)
-    return (await import("../mocks/adapter")).mockRequest<T>(path, options);
   const method = options.method || "GET";
   const headers = new Headers(options.headers);
   if (options.body && !(options.body instanceof FormData))
@@ -195,7 +191,6 @@ export async function getContent(
   path: string,
   signal?: AbortSignal,
 ): Promise<Blob> {
-  if (mockMode) return (await import("../mocks/adapter")).mockContent(path);
   const response = await fetch(`${API_BASE}${path}`, {
     credentials: "include",
     signal,
@@ -223,14 +218,6 @@ export function uploadResource(
   form.append("file", file);
   if (folderId) form.append("folder_id", folderId);
   if (title.trim()) form.append("title", title.trim());
-  if (mockMode)
-    return request<Resource>(`/projects/${projectId}/resources`, {
-      method: "POST",
-      body: form,
-    }).then((r) => {
-      onProgress(100);
-      return r;
-    });
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", `${API_BASE}/projects/${projectId}/resources`);

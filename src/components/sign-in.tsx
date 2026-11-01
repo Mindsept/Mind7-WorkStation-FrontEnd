@@ -18,10 +18,6 @@ const authMessages: Record<string, string> = {
     "Sign-in is temporarily unavailable. Please try again shortly.",
   database_unavailable:
     "Sign-in is temporarily unavailable. Please try again shortly.",
-  development_identity_required:
-    "Microsoft sign-in is not configured in this local development environment. Choose an explicitly labeled development identity.",
-  development_auth_disabled:
-    "This sign-in link is not available. Return to the login page and try again.",
   invalid_redirect:
     "This sign-in link is not available. Return to the login page and try again.",
 };
@@ -32,7 +28,6 @@ export function getLoginHint() {
     message: Object.hasOwn(authMessages, code)
       ? authMessages[code]
       : "We could not complete sign-in. Please try again.",
-    development: code === "development_identity_required",
   };
 }
 export type LoginHint = ReturnType<typeof getLoginHint>;
@@ -59,9 +54,6 @@ export function SignIn({
   useEffect(() => {
     if (hint || state !== "signed-out") heading.current?.focus();
   }, [hint, state]);
-  const development =
-    import.meta.env.DEV &&
-    (hint?.development || import.meta.env.VITE_SHOW_DEV_SIGNIN === "true");
   return (
     <main
       className={`studio-login ${state !== "signed-out" ? "studio-status" : ""}`}
@@ -158,18 +150,6 @@ export function SignIn({
           </div>
         </GlareHover>
       </div>
-      {development && (
-        <aside
-          className="development-signin"
-          aria-label="Local development sign-in"
-        >
-          <strong>Local development only</strong>
-          <a href="/api/v1/auth/login?dev_user=member">Development member</a>
-          <a href="/api/v1/auth/login?dev_user=admin">
-            Development administrator
-          </a>
-        </aside>
-      )}
       <footer className="studio-footer">
         <span>
           <ShieldCheck size={15} />

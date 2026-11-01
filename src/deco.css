@@ -60,18 +60,7 @@ h3 {
   border-color: #5d6855;
   color: #e2ddcb;
 }
-.demo-bar {
-  background: #30362b;
-  border-color: #5d654f;
-  color: #e7e2d5;
-}
-.demo-bar select {
-  background: #1c211b;
-  border-color: #72765f;
-}
-.demo-note {
-  color: #c7c8b7;
-}
+
 .sidebar {
   width: 214px;
   padding: 30px 21px 22px;

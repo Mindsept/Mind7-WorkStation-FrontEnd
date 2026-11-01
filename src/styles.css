@@ -218,39 +218,7 @@ textarea {
   margin-top: 3px;
   color: #b6ac9b;
 }
-.demo-bar {
-  position: relative;
-  z-index: 60;
-  background: #38342e;
-  border-bottom: 1px solid #766a55;
-  padding: 7px 26px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  font-size: 10px;
-  letter-spacing: 0.8px;
-  color: #eeebe7;
-}
-.demo-bar label {
-  display: flex;
-  gap: 9px;
-  align-items: center;
-  white-space: nowrap;
-}
-.demo-bar select {
-  padding: 3px 7px;
-  width: auto;
-  min-height: 28px;
-  font-size: 11px;
-  background: #1e1c19;
-  border-color: #716654;
-}
-.demo-note {
-  color: #cac3b6;
-  text-transform: none;
-  letter-spacing: 0;
-}
+
 .app-shell {
   display: flex;
   min-height: 100vh;
@@ -2103,17 +2071,6 @@ progress {
   }
 }
 @media (max-width: 640px) {
-  .demo-bar {
-    padding: 7px 13px;
-    font-size: 8px;
-    gap: 6px;
-  }
-  .demo-note {
-    display: none;
-  }
-  .demo-bar select {
-    font-size: 10px;
-  }
   .sidebar {
     display: none;
     position: fixed;

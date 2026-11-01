@@ -476,7 +476,7 @@ test("browser sign-in hints are static, consumed, focused and never override a v
     ["invalid_login", "expired or could not be verified"],
     ["not_whitelisted", "does not have access"],
     ["directory_unavailable", "temporarily unavailable"],
-    ["development_identity_required", "not configured"],
+    ["database_unavailable", "temporarily unavailable"],
     ["<script>untrusted-value</script>", "could not complete sign-in"],
   ];
   for (const [code, message] of cases) {
@@ -491,7 +491,7 @@ test("browser sign-in hints are static, consumed, focused and never override a v
       page.getByRole("link", { name: "Continue with Microsoft" }),
     ).toHaveAttribute("href", "/api/v1/auth/login");
     await expect(
-      page.getByRole("link", { name: "Development administrator" }),
+      page.locator('a[href*="dev_user"], .demo-bar, .development-signin'),
     ).toHaveCount(0);
   }
   await page.route("**/api/v1/auth/session", (route) =>
