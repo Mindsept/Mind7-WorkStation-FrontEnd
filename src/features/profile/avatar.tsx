@@ -1,23 +1,11 @@
 import { useEffect, useState } from "react";
 import { API_BASE, getContent } from "../../api/client";
+import { resolveAvatarPath } from "../../api/urls";
 import { initials } from "../../components/ui";
 
 /** Only the documented authenticated image endpoint may supply profile bytes. */
 export function avatarPath(value?: string | null): string | null {
-  if (!value) return null;
-  try {
-    const url = new URL(value, window.location.origin);
-    if (
-      url.origin !== window.location.origin ||
-      url.username ||
-      url.password ||
-      !/^\/api\/v1\/members\/[a-f\d-]{36}\/avatar$/.test(url.pathname)
-    )
-      return null;
-    return `${url.pathname.slice(API_BASE.length)}${url.search}`;
-  } catch {
-    return null;
-  }
+  return resolveAvatarPath(value, API_BASE, window.location.origin);
 }
 
 export function Avatar({

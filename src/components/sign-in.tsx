@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { ArrowUpRight, ShieldCheck } from "lucide-react";
 import { ErrorNotice } from "./ui";
+import { API_BASE } from "../api/client";
 import GlareHover from "./react-bits/GlareHover/GlareHover";
 
 const authMessages: Record<string, string> = {
@@ -134,7 +135,7 @@ export function SignIn({
                   <ArrowUpRight size={18} />
                 </button>
               ) : (
-                <a href="/api/v1/auth/login" className="button microsoft">
+                <a href={`${API_BASE}/auth/login`} className="button microsoft">
                   <span className="ms-mark" aria-hidden="true">
                     <i />
                     <i />

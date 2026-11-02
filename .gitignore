@@ -59,6 +59,7 @@ tmp/
 # Node/Vite/Playwright outputs.
 node_modules/
 dist/
+dist-cross-origin/
 .vite/
 .npm/
 .pnpm-store/

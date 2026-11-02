@@ -18,7 +18,8 @@ import type {
   Session,
   Summary,
 } from "./types";
-export const API_BASE = "/api/v1";
+import { normalizeApiBase } from "./urls";
+export const API_BASE = normalizeApiBase(import.meta.env.VITE_API_BASE);
 export const maxUploadBytes =
   (Number(import.meta.env.VITE_MAX_UPLOAD_MB) || 20) * 1024 * 1024;
 export class ApiError extends Error {
