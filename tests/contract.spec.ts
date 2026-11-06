@@ -467,6 +467,210 @@ test("PDF uses credentialed content, a local blob reader and a download fallback
   expect((await dl).suggestedFilename()).toBe("fixture.pdf");
 });
 
+async function captureDiagramSources(page: Page) {
+  await page.addInitScript(() => {
+    const state = window as unknown as { diagramSources: Promise<string>[] };
+    state.diagramSources = [];
+    const create = URL.createObjectURL.bind(URL);
+    URL.createObjectURL = (blob) => {
+      if (blob instanceof Blob && blob.type === "image/svg+xml")
+        state.diagramSources.push(blob.text());
+      return create(blob);
+    };
+  });
+}
+async function diagramSources(page: Page) {
+  return page.evaluate(() =>
+    Promise.all(
+      (window as unknown as { diagramSources: Promise<string>[] })
+        .diagramSources,
+    ),
+  );
+}
+
+test("Mermaid renders multiple diagram types with the dark deco palette and fits mobile", async ({
+  page,
+}) => {
+  await captureDiagramSources(page);
+  const blocks = [
+    "flowchart LR\naccTitle: Deployment\nBrowser --> API --> Database",
+    "sequenceDiagram\naccTitle: Authentication\nBrowser->>API: Sign in\nAPI-->>Browser: Session",
+    "classDiagram\naccTitle: Project model\nProject --> Document",
+  ];
+  await fixture(page, {
+    type: "markdown",
+    html: blocks.map((block) => `\`\`\`mermaid\n${block}\n\`\`\``).join("\n\n"),
+  });
+  await page.goto(`/projects/${pid}/resources/${rid}`);
+  const diagrams = page.locator(".mermaid-canvas img");
+  await expect(diagrams).toHaveCount(3);
+  for (const [index, title] of [
+    "Deployment",
+    "Authentication",
+    "Project model",
+  ].entries()) {
+    await expect(diagrams.nth(index)).toHaveAttribute("alt", title);
+    await expect
+      .poll(() =>
+        diagrams
+          .nth(index)
+          .evaluate(
+            (img: HTMLImageElement) => img.complete && img.naturalWidth > 0,
+          ),
+      )
+      .toBe(true);
+  }
+  const svg = (await diagramSources(page)).find((source) =>
+    source.includes(">Deployment</title>"),
+  );
+  expect(svg).toBeDefined();
+  expect(svg).toContain("Browser");
+  expect(svg).toContain("#273b30");
+  expect(svg).toContain("#dac18d");
+  await expect(
+    page.locator('body > div[aria-hidden="true"][inert]'),
+  ).toHaveCount(0);
+  await page
+    .getByRole("button", { name: "Full size", exact: true })
+    .first()
+    .click();
+  await expect(
+    page.getByRole("button", { name: "Fit to width" }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await page.getByRole("button", { name: "Fit to width" }).click();
+  await page.screenshot({
+    path: "test-results/mermaid-desktop.png",
+    fullPage: true,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  await page.screenshot({
+    path: "test-results/mermaid-mobile.png",
+    fullPage: true,
+  });
+});
+
+test("invalid and oversized Mermaid preserve source without blocking the following diagram", async ({
+  page,
+}) => {
+  const invalid = "flowchart LR\nA --> [broken";
+  await fixture(page, {
+    type: "markdown",
+    html: `\`\`\`mermaid\n${invalid}\n\`\`\`\n\n\`\`\`mermaid\n${"x".repeat(20_001)}\n\`\`\`\n\n\`\`\`mermaid\nflowchart LR\nA --> B\n\`\`\`\n\n\`\`\`js\nconst preserved = true;\n\`\`\``,
+  });
+  await page.goto(`/projects/${pid}/resources/${rid}`);
+  await expect(
+    page.getByText("This diagram could not be rendered.", { exact: false }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("This diagram is too large to preview.", { exact: false }),
+  ).toBeVisible();
+  await expect(page.locator(".mermaid-source pre").first()).toHaveText(invalid);
+  await expect(page.locator(".mermaid-canvas img")).toBeVisible();
+  await expect(page.locator("pre code.language-js")).toHaveText(
+    "const preserved = true;\n",
+  );
+  await expect(
+    page.locator('body > div[aria-hidden="true"][inert]'),
+  ).toHaveCount(0);
+});
+
+test("Mermaid strict security survives configuration overrides and renders as an inert image", async ({
+  page,
+}) => {
+  await captureDiagramSources(page);
+  const external: string[] = [];
+  page.on("request", (req) => {
+    if (req.url().includes("attacker.invalid")) external.push(req.url());
+  });
+  const source = `---\nconfig:\n  securityLevel: loose\n  htmlLabels: true\n  theme: default\n  themeCSS: 'body { display: none }'\n---\nflowchart LR\nA["<img src='https://attacker.invalid/track' onerror='window.mermaidPwned=true'>"] --> B[Safe]\nclick B "https://attacker.invalid/steal"`;
+  await fixture(page, {
+    type: "markdown",
+    html: `\`\`\`mermaid\n${source}\n\`\`\``,
+  });
+  await page.goto(`/projects/${pid}/resources/${rid}`);
+  const diagram = page.locator(".mermaid-canvas img");
+  await expect(diagram).toBeVisible();
+  const svg = (await diagramSources(page))[0];
+  expect(svg).toContain("#273b30");
+  expect(svg).not.toMatch(/<script|<foreignObject|<a\s|<image\s/i);
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { mermaidPwned?: boolean }).mermaidPwned,
+    ),
+  ).toBeUndefined();
+  expect(external).toEqual([]);
+  await expect(
+    page.getByRole("heading", { name: "Security fixture", exact: true }),
+  ).toBeVisible();
+});
+
+test("Mermaid works in documentation and file editor previews and recovers after edits", async ({
+  page,
+}) => {
+  const fenced = (source: string) => `\`\`\`mermaid\n${source}\n\`\`\``;
+  await fixture(page, {
+    type: "markdown",
+    html: fenced("flowchart LR\nFile --> Preview"),
+  });
+  await page.route("**/api/v1/projects/*/documentation", (route) =>
+    route.fulfill({
+      json: {
+        id: rid,
+        project_id: pid,
+        overview_markdown: fenced("flowchart LR\nOverview --> Diagram"),
+        created_at: stamp,
+        updated_at: stamp,
+      },
+    }),
+  );
+  await page.goto(`/projects/${pid}/documentation`);
+  await page.getByRole("button", { name: "Overview", exact: true }).click();
+  await expect(page.locator(".mermaid-canvas img")).toBeVisible();
+  await page.getByRole("button", { name: "Edit overview" }).click();
+  await page
+    .getByLabel("Overview Markdown")
+    .fill(fenced("sequenceDiagram\nEditor->>Reader: Preview"));
+  await page.getByRole("button", { name: "Preview", exact: true }).click();
+  await expect(page.locator(".mermaid-canvas img")).toBeVisible();
+  await page.goto(`/projects/${pid}/resources/${rid}`);
+  await page.getByRole("button", { name: "Edit Markdown" }).click();
+  await page
+    .getByLabel("File Markdown")
+    .fill(fenced("flowchart LR\nA --> [broken"));
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Preview", exact: true })
+    .click();
+  await expect(
+    page
+      .getByRole("dialog")
+      .getByText("This diagram could not be rendered.", { exact: false }),
+  ).toBeVisible();
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Write", exact: true })
+    .click();
+  await page
+    .getByLabel("File Markdown")
+    .fill(fenced("flowchart LR\naccTitle: Fixed diagram\nFixed --> Preview"));
+  await page
+    .getByRole("dialog")
+    .getByRole("button", { name: "Preview", exact: true })
+    .click();
+  await expect(
+    page.getByRole("dialog").getByRole("img", { name: "Fixed diagram" }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Close dialog" }).click();
+  await expect(
+    page.locator('body > div[aria-hidden="true"][inert]'),
+  ).toHaveCount(0);
+});
+
 test("browser sign-in hints are static, consumed, focused and never override a valid session", async ({
   page,
 }) => {

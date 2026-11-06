@@ -46,6 +46,22 @@ Authorized users manage shared projects and documentation. Attendance actions re
 
 Resources and documentation share the same records. Context export downloads the backend ZIP without creating a frontend archive or sending content to an external LLM. HTML previews use an isolated iframe with scripts disabled by default; optional slide scripts never enable same-origin access. Markdown disables raw HTML and rejects unsafe link protocols. PDFs retain a download fallback. The backend contract governs content CSP, validation, permissions, upload limits and conflict responses.
 
+## Mermaid diagrams in Markdown
+
+Fenced `mermaid` blocks render in Markdown files, documentation overviews and editor previews. For example:
+
+````markdown
+```mermaid
+flowchart LR
+  accTitle: WorkStation deployment
+  Browser --> API --> PostgreSQL
+```
+````
+
+Diagrams use the workspace's forest, brass and ivory palette. They fit the reader width; **Full size** enables scrolling at the diagram's original size. **Mermaid source** exposes the original code, including when syntax is invalid. Add Mermaid `accTitle` and `accDescr` to provide meaningful accessible image descriptions.
+
+The renderer loads only when a Mermaid block is present and runs entirely in the browser. Strict security and the application theme cannot be overridden by diagram configuration. Rendered SVGs are displayed as inert Blob images, without clickable links or callbacks. Source is limited to 20,000 characters per diagram and Mermaid's edge limit is 200. Other fenced languages remain ordinary code blocks. No backend or deployment environment changes are required.
+
 ## Production deployment
 
 ### Vercel (current production target)

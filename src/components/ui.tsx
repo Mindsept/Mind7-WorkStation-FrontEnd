@@ -1,10 +1,11 @@
-import { useId, useRef, useState } from "react";
+import { isValidElement, useId, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { AlertCircle, ArrowRight, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ActionButton, LoaderOne, useOperationGuard } from "./action-button";
+import { MermaidDiagram } from "./mermaid-diagram";
 export function Loading({ label = "Loading workspace…" }: { label?: string }) {
   return (
     <div className="state-box" role="status">
@@ -198,7 +199,23 @@ export function Markdown({ text }: { text: string }) {
         skipHtml
         urlTransform={safeLink}
         components={{
-          pre: ({ children }) => <pre tabIndex={0}>{children}</pre>,
+          pre: ({ children }) => {
+            if (
+              isValidElement<{ className?: string; children?: ReactNode }>(
+                children,
+              ) &&
+              /(?:^|\s)language-mermaid(?:\s|$)/i.test(
+                children.props.className || "",
+              ) &&
+              typeof children.props.children === "string"
+            )
+              return (
+                <MermaidDiagram
+                  source={children.props.children.replace(/\n$/, "")}
+                />
+              );
+            return <pre tabIndex={0}>{children}</pre>;
+          },
           a: ({ href, children }) => (
             <a
               href={href || undefined}
